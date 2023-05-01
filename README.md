@@ -1,2 +1,4 @@
 # pacman-tool
-Little python tool thing I'm working on that basically acts as a bulk Pacman package manipulation tool
+Simple python tool I'm working on that essentially acts as a bulk Pacman package manipulation tool.
+I wrote this cuz I got tired of manually searching and deleting all packages related to PipeWire for
+reinstallation.

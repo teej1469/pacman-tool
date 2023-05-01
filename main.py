@@ -22,7 +22,7 @@ def package_list(pkgs: list) -> list:
             for i in ignore:            # Forcing i to be an int (also preventing
                 i = int(i)              # bad inputs from the user)
                 try:
-                    pkgs.pop(i)
+                    pkgs.pop(i)         # Removes specified packages from pkgs list.
                 except IndexError:
                     pkgs.clear()
 
@@ -39,55 +39,6 @@ def package_list(pkgs: list) -> list:
     except KeyboardInterrupt:
         print("Process killed by user.")
         exit()
-#"""
-        # package_list: list = []
-        # for i in packages:
-        #     package_list.append(f"{packages.index(i)}:\t{i}")
-        # package_list.reverse()
-
-        # approved = False
-        # while approved != True:
-        #     print("\n".join(package_list))
-        #     to_ignore = input("What packages should be ignored? [e.g '1 3 4'] ")
-        #     if to_ignore.strip() == "":
-        #         break
-        #     to_ignore = to_ignore.split(" ")
-        #     for i in to_ignore:
-        #         i = int(i)
-            
-        #     to_ignore.clear()
-        #     package_list.clear()
-            
-        #     packages.reverse()
-        #     for i in packages:
-        #         if packages.index(i) in to_ignore:
-        #             packages.remove(i)
-        #         else:
-        #             package_list.append(f"{packages.index(i)}:\t{i}")
-        #     package_list.reverse()
-        #     clear()
-        #     print("\n".join(package_list))
-        #     approved = input("Confirm removal of these packages? [y/N] ")
-        #     if approved.lower() == "y":
-        #         approved = True
-        #     clear()
-        # return packages
-
-    # try:
-
-    #     clear()
-    #     cont = input(f"You are about to remove the following {packages.__len__()} packages:\n{', '.join(packages)}\nProceed? [Y/n] ")
-
-    #     if not cont.lower() == "y" and not cont == "":
-    #         print("Nothing to do.")
-    #         exit()
-
-    #     for i in packages:
-    #         subprocess.run(f"sudo pacman -R {i} --noconfirm".split(" "), stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-    #         print(f"{packages.index(i)+1} of {packages.__len__()}, {i}")
-
-    # except KeyboardInterrupt:
-    #     print("\nProcess killed by user. Please be cautious when doing this,\nas cancelling installations can cause problems.")"""
 
 def main():
     argParser = argparse.ArgumentParser()
