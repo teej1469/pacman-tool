@@ -1,9 +1,11 @@
 import os, subprocess, argparse
+from sys import argv
 def clear():
     subprocess.run('clear')
 
-def package_list(pkgs: list) -> list:
+def package_list(packages: list) -> list:
     try: 
+        pkgs = packages
         list_pkgs: list = []    # List of packages exclusively for printing, not for using within code
         for i in pkgs:
             list_pkgs.insert(0,f"{pkgs.index(i)}:\t\b\b{i}")
@@ -15,17 +17,18 @@ def package_list(pkgs: list) -> list:
             clear()
             print("\n".join(list_pkgs))
             ignore = input(f"What packages should be ignored? [E.g: '1 2 3 5']\n> ")
-            if ignore.strip() == "":    # Handling no input - assuming no corrections.
+            if ignore == "":    # Handling no input - assuming no corrections.
+                print(ignore)
                 approved = True
                 break
-            ignore = ignore.split(" ")
+            ignore = ignore.strip().split(" ")
             for i in ignore:            # Forcing i to be an int (also preventing
-                i = int(i)              # bad inputs from the user)
+                i = str(i)                        # bad inputs from the user)
                 try:
-                    pkgs.pop(i)         # Removes specified packages from pkgs list.
+                    pkgs.pop(str(i))         # Removes specified packages from pkgs list.
                 except IndexError:
                     pkgs.clear()
-
+    
             if len(pkgs) == 0:
                 print("Nothing to do.")
                 return(None)
@@ -40,21 +43,38 @@ def package_list(pkgs: list) -> list:
         print("Process killed by user.")
         exit()
 
+def sync(packages: list):
+    if not packages == None:
+        for i in packages:
+                    print(f"Syncing package: {i}")
+                    subprocess.run(f"sudo pacman -Sy {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+
+
 def main():
     argParser = argparse.ArgumentParser()
-    argParser.add_argument("-v", "--version", action="version", version='%(prog)s alph0.1')
-    purge = argParser.add_mutually_exclusive_group()
-    purge.add_argument("-R", type=str, help="Purge Pacman packages filtered by name", metavar="pkg")
+    argParser.add_argument("-v", "--version", action="version", version='%(prog)s alph0.2')
+    action = argParser.add_mutually_exclusive_group()
+    action.required = True
+    action.add_argument("-R", type=str, help="Purge Pacman packages filtered by name", metavar="pkg")
+    action.add_argument("-S", type=str, help="Resyncronize packages filtered by name", metavar="pkg")
+    argParser.conflict_handler
     args = argParser.parse_args()
-    print(args.purge)
-    
-    to_purge = input("Filter?\n> ")    # Packages to be removed.
+    # print(args._get_kwargs())           # For debugging
 
-    pkgs = subprocess.check_output(f"pacman -Q|cut -f 1 -d \" \" | grep {to_purge}", shell=True).decode().split("\n")
+    action = ""
+    for i in args._get_kwargs():
+        if not None in i:
+            action = str(i)[2:3]
+            fltr = str(i)[7:-2]
+    
+    pkgs = subprocess.check_output(f"pacman -Q|cut -f 1 -d \" \" | grep {fltr}", shell=True).decode().split("\n")
     pkgs:list = list(filter(None, pkgs))
     pkgs.sort()
 
-
-
-
+    print(action[2:3])
+    if action == "R":
+        for i in pkgs:
+            subprocess.run(f"sudo pacman -Rdd {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+    elif action == "S":
+        sync(package_list(pkgs))
 main()
