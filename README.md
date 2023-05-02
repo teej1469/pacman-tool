@@ -8,5 +8,5 @@ reinstallation.
 
 * [X] Bulk package removal
 * [X] Package resyncing
-* [ ] Full system update/upgrade on dry run (Like`yay`)
+* [ ] Full system update/upgrade on dry run (Like `yay`)
 * [ ] (Maybe) AUR support
