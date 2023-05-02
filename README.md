@@ -10,3 +10,4 @@ reinstallation.
 * [X] Package resyncing
 * [ ] Full system update/upgrade on dry run (Like `yay`)
 * [ ] (Maybe) AUR support
+* [ ] (Hopefully) Complete rewrite in Rust :)
