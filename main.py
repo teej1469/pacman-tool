@@ -101,4 +101,4 @@ def main():
     elif args[0] == "S":
         sync(package_list(pkgs))
 
-main()
+main() # ballsack
