@@ -54,7 +54,7 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
 
         return pkgs
     except KeyboardInterrupt:
-        print("Process killed by user.")
+        print("\nProcess killed by user.")
         exit()
 
 def remove(packages: list):
@@ -82,7 +82,7 @@ def arguments() -> list:
     for i in args._get_kwargs():
         if not None in i:
             action = str(i)[2:3]
-            fltr = str(i)[7:-2]
+            fltr = str(i).lower()[7:-2]
             return [action, fltr]
 
 def packages(pkg_filter:str) -> list: 
