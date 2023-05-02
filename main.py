@@ -3,7 +3,7 @@ from sys import argv
 def clear():
     subprocess.run('clear')
 
-def package_list(packages: list) -> list:
+def package_list(packages: list) -> list:       # TODO: Fix this shit
     try: 
         pkgs = packages
         list_pkgs: list = []    # List of packages exclusively for printing, not for using within code
@@ -18,24 +18,34 @@ def package_list(packages: list) -> list:
             print("\n".join(list_pkgs))
             ignore = input(f"What packages should be ignored? [E.g: '1 2 3 5']\n> ")
             if ignore == "":    # Handling no input - assuming no corrections.
-                print(ignore)
                 approved = True
                 break
             ignore = ignore.strip().split(" ")
             for i in ignore:            # Forcing i to be an int (also preventing
-                i = str(i)                        # bad inputs from the user)
+                i = int(i)                        # bad inputs from the user)
                 try:
-                    pkgs.pop(str(i))         # Removes specified packages from pkgs list.
-                except IndexError:
+                    pkgs[i] = None         # Removes specified packages from pkgs list.
+                except TypeError():
                     pkgs.clear()
-    
-            if len(pkgs) == 0:
+            if None in pkgs:
+                n = True
+                while n:
+                    try:
+                        pkgs.remove(None)
+                    except ValueError: 
+                        n = False
+                        pass
+
+            if len(pkgs) == 0:          # Wrongfully returns true sometimes - investigate
                 print("Nothing to do.")
                 return(None)
 
             approved = input(f"Packages to modify:\n{', '.join(pkgs)}\nAre you sure you want to modify these packages? [y/N]\n> ")
             if approved.lower() == "y":
                 approved = True
+            elif approved.lower() == "n":
+                print("Nothing to do.")
+                return(None)
             clear()
 
         return pkgs
@@ -43,11 +53,16 @@ def package_list(packages: list) -> list:
         print("Process killed by user.")
         exit()
 
+def remove(packages: list):
+    if not packages == None:
+        for i in pkgs:
+            subprocess.run(f"sudo pacman -Rdd {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+
 def sync(packages: list):
     if not packages == None:
         for i in packages:
-                    print(f"Syncing package: {i}")
-                    subprocess.run(f"sudo pacman -Sy {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+            print(f"Syncing package: {i}")
+            subprocess.run(f"sudo pacman -Sy {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
 
 
 def main():
@@ -71,10 +86,8 @@ def main():
     pkgs:list = list(filter(None, pkgs))
     pkgs.sort()
 
-    print(action[2:3])
     if action == "R":
-        for i in pkgs:
-            subprocess.run(f"sudo pacman -Rdd {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+        remove(package_list(pkgs))
     elif action == "S":
         sync(package_list(pkgs))
 main()
