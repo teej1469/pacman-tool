@@ -1,9 +1,13 @@
 import os, subprocess, argparse
 from sys import argv
+
+class message():
+    SUDO_PROMPT:str = "[Sudo] As this script uses pacman, and makes changes to installed packages, root permissions are required. Please authenticate:\n> "
+
 def clear():
     subprocess.run('clear')
 
-def package_list(packages: list) -> list:       # TODO: Fix this shit
+def package_list(packages: list) -> list:       # Update: I fixed that shit!
     try: 
         pkgs = packages
         list_pkgs: list = []    # List of packages exclusively for printing, not for using within code
@@ -56,16 +60,15 @@ def package_list(packages: list) -> list:       # TODO: Fix this shit
 def remove(packages: list):
     if not packages == None:
         for i in pkgs:
-            subprocess.run(f"sudo pacman -Rdd {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+            subprocess.run(f"sudo -p \"{message.SUDO_PROMPT}\" pacman -Rdd {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
 
 def sync(packages: list):
     if not packages == None:
         for i in packages:
             print(f"Syncing package: {i}")
-            subprocess.run(f"sudo pacman -Sy {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+            subprocess.run(f"sudo -p \"{message.SUDO_PROMPT}\" pacman -Sy {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
 
-
-def main():
+def arguments() -> list: 
     argParser = argparse.ArgumentParser()
     argParser.add_argument("-v", "--version", action="version", version='%(prog)s alph0.2')
     action = argParser.add_mutually_exclusive_group()
@@ -74,20 +77,28 @@ def main():
     action.add_argument("-S", type=str, help="Resyncronize packages filtered by name", metavar="pkg")
     argParser.conflict_handler
     args = argParser.parse_args()
-    # print(args._get_kwargs())           # For debugging
 
-    action = ""
+    action = None
     for i in args._get_kwargs():
         if not None in i:
             action = str(i)[2:3]
             fltr = str(i)[7:-2]
-    
-    pkgs = subprocess.check_output(f"pacman -Q|cut -f 1 -d \" \" | grep {fltr}", shell=True).decode().split("\n")
+            return [action, fltr]
+
+def packages(pkg_filter:str) -> list: 
+    pkgs = subprocess.check_output(f"pacman -Q|cut -f 1 -d \" \" | grep {pkg_filter}", shell=True).decode().split("\n")
     pkgs:list = list(filter(None, pkgs))
     pkgs.sort()
+    return pkgs
 
-    if action == "R":
+def main():
+    
+    args = arguments()
+    pkgs = packages(args[1])
+
+    if args[0] == "R":
         remove(package_list(pkgs))
-    elif action == "S":
+    elif args[0] == "S":
         sync(package_list(pkgs))
+
 main()
