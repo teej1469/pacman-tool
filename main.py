@@ -3,6 +3,11 @@ from sys import argv
 
 class message():
     SUDO_PROMPT:str = "[Sudo] As this script uses pacman, and makes changes to installed packages, root permissions are required. Please authenticate:\n> "
+    IGNORE_PROMPT:str = "What packages should be ignored? [E.g: '1 2 3 5']\n> "
+    EMPTY_EXIT:str = "Nothing to do."
+    KEYBOARD_INTERRUPT:str = "\nKilled by user.\n"
+    def MODIFY_CONFIRM(arg:list) -> str:
+        return(f"Packages to modify:\n{', '.join(arg)}\nAre you sure you want to modify these packages? [y/N]\n> ")
 
 def clear():
     subprocess.run('clear')
@@ -20,10 +25,13 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
         while approved != True:
             clear()
             print("\n".join(list_pkgs))
-            ignore = input(f"What packages should be ignored? [E.g: '1 2 3 5']\n> ")
+            ignore = input(message.IGNORE_PROMPT)
             if ignore == "":    # Handling no input - assuming no corrections.
                 approved = True
                 break
+            if any(["q","Q","exit"]) in ignore:
+                print(message.EMPTY_EXIT)
+                return(None)
             ignore = ignore.strip().split(" ")
             for i in ignore:            # Forcing i to be an int (also preventing
                 i = int(i)                        # bad inputs from the user)
@@ -41,20 +49,20 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
                         pass
 
             if len(pkgs) == 0:          # Wrongfully returns true sometimes - investigate
-                print("Nothing to do.")
+                print(message.EMPTY_EXIT)
                 return(None)
 
-            approved = input(f"Packages to modify:\n{', '.join(pkgs)}\nAre you sure you want to modify these packages? [y/N]\n> ")
+            approved = input(message.MODIFY_CONFIRM(pkgs))
             if approved.lower() == "y":
                 approved = True
             elif approved.lower() == "n":
-                print("Nothing to do.")
+                print(message.EMPTY_EXIT)
                 return(None)
             clear()
 
         return pkgs
     except KeyboardInterrupt:
-        print("\nProcess killed by user.")
+        print(message.KEYBOARD_INTERRUPT)
         exit()
 
 def remove(packages: list):
