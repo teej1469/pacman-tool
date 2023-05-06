@@ -1,16 +1,6 @@
 import os, subprocess, argparse
 from sys import argv
-
-class message():
-    SUDO_PROMPT:str = "[Sudo] As this script uses pacman, and makes changes to installed packages, root permissions are required. Please authenticate:\n> "
-    IGNORE_PROMPT:str = "What packages should be ignored? [E.g: '1 2 3 5']\n> "
-    EMPTY_EXIT:str = "Nothing to do."
-    KEYBOARD_INTERRUPT:str = "\nKilled by user.\n"
-    def MODIFY_CONFIRM(arg:list) -> str:
-        return(f"Packages to modify:\n{', '.join(arg)}\nAre you sure you want to modify these packages? [y/N]\n> ")
-
-def clear():
-    subprocess.run('clear')
+from src.__pacman_tool__ import *
 
 def package_list(packages: list) -> list:       # Update: I fixed that shit!
     try: 
@@ -29,11 +19,12 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
             if ignore == "":    # Handling no input - assuming no corrections.
                 approved = True
                 break
-            if any(["q","Q","exit"]) in ignore:
-                print(message.EMPTY_EXIT)
-                return(None)
             ignore = ignore.strip().split(" ")
             for i in ignore:            # Forcing i to be an int (also preventing
+                if "q" or "exit" in i.lower():
+                    print(message.EMPTY_EXIT)
+                    return(None)
+
                 i = int(i)                        # bad inputs from the user)
                 try:
                     pkgs[i] = None         # Removes specified packages from pkgs list.
@@ -66,47 +57,72 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
         exit()
 
 def remove(packages: list):
-    if not packages == None:
-        for i in pkgs:
-            subprocess.run(f"sudo -p \"{message.SUDO_PROMPT}\" pacman -Rdd {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+    try:
+        if not packages == None:
+            for i in pkgs:
+                subprocess.run(f"sudo -p \"{message.SUDO_PROMPT}\" pacman -Rdd {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+    except KeyboardInterrupt:
+        print(message.KEYBOARD_INTERRUPT)
+        exit()
 
 def sync(packages: list):
-    if not packages == None:
-        for i in packages:
-            print(f"Syncing package: {i}")
-            subprocess.run(f"sudo -p \"{message.SUDO_PROMPT}\" pacman -Sy {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+    try:
+        if not packages == None:
+            for i in packages:
+                print(f"Syncing package: {i}")
+                subprocess.run(f"sudo -p \"{message.SUDO_PROMPT}\" pacman -Sy {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
+    except KeyboardInterrupt:
+        print(message.KEYBOARD_INTERRUPT)
+        exit()
 
-def arguments() -> list: 
-    argParser = argparse.ArgumentParser()
-    argParser.add_argument("-v", "--version", action="version", version='%(prog)s alph0.2')
-    action = argParser.add_mutually_exclusive_group()
-    action.required = True
-    action.add_argument("-R", type=str, help="Purge Pacman packages filtered by name", metavar="pkg")
-    action.add_argument("-S", type=str, help="Resyncronize packages filtered by name", metavar="pkg")
-    argParser.conflict_handler
-    args = argParser.parse_args()
+def arguments(app:dict) -> list: 
+    try:
+        argparse.HelpFormatter(prog=app.get("Name"))
+        argParser = argparse.ArgumentParser(prog=app.get("SWName"),description=f"{app.get('Name')} is a simple pacman tool written in python for bulk package operations.")
+        
+        argParser.add_argument("-v", "--version", action="version", version=f'%(prog)s {app.get("Type")} {app.get("Version")}')
+        action = argParser.add_mutually_exclusive_group()
+        action.required = True
+        action.add_argument("-R", type=str, help="Purge Pacman packages filtered by name", metavar="pkg")
+        action.add_argument("-S", type=str, help="Resyncronize packages filtered by name", metavar="pkg")
+        argParser.conflict_handler
+        args = argParser.parse_args()
 
-    action = None
-    for i in args._get_kwargs():
-        if not None in i:
-            action = str(i)[2:3]
-            fltr = str(i).lower()[7:-2]
-            return [action, fltr]
+        action = None
+        for i in args._get_kwargs():
+            if not None in i:
+                action = str(i)[2:3]
+                fltr = str(i).lower()[7:-2]
+                return [action, fltr]
+    except KeyboardInterrupt:
+        print(message.KEYBOARD_INTERRUPT)
+        exit()
 
 def packages(pkg_filter:str) -> list: 
-    pkgs = subprocess.check_output(f"pacman -Q|cut -f 1 -d \" \" | grep {pkg_filter}", shell=True).decode().split("\n")
-    pkgs:list = list(filter(None, pkgs))
-    pkgs.sort()
-    return pkgs
+    try:
+        pkgs = subprocess.check_output(f"pacman -Q|cut -f 1 -d \" \" | grep {pkg_filter}", shell=True).decode().split("\n")
+        pkgs:list = list(filter(None, pkgs))
+        pkgs.sort()
+        return pkgs
+    except KeyboardInterrupt:
+        print(message.KEYBOARD_INTERRUPT)
+        exit()
 
 def main():
-    
-    args = arguments()
-    pkgs = packages(args[1])
+    APP = {
+        "Type": "Alpha",
+        "Version": "0.3",
+        "Name": "Pacman Tool",
+        "SWName": "pacman-tool"}
+    try:
+        args = arguments(app=APP)
+        pkgs = packages(args[1])
 
-    if args[0] == "R":
-        remove(package_list(pkgs))
-    elif args[0] == "S":
-        sync(package_list(pkgs))
-
+        if args[0] == "R":
+            remove(package_list(pkgs))
+        elif args[0] == "S":
+            sync(package_list(pkgs))
+    except KeyboardInterrupt:
+        print(message.KEYBOARD_INTERRUPT)
+        exit()
 main() # runs the script.
