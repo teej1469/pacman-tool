@@ -1,6 +1,6 @@
 import os, subprocess, argparse
 from sys import argv
-from src.__pacman_tool__ import *
+from __pacman_tool__ import *
 
 def package_list(packages: list) -> list:       # Update: I fixed that shit!
     try: 
@@ -24,6 +24,7 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
                 if "q" or "exit" in i.lower():
                     print(message.EMPTY_EXIT)
                     return(None)
+                    break
 
                 i = int(i)                        # bad inputs from the user)
                 try:
@@ -42,6 +43,7 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
             if len(pkgs) == 0:          # Wrongfully returns true sometimes - investigate
                 print(message.EMPTY_EXIT)
                 return(None)
+                break
 
             approved = input(message.MODIFY_CONFIRM(pkgs))
             if approved.lower() == "y":
@@ -49,6 +51,7 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
             elif approved.lower() == "n":
                 print(message.EMPTY_EXIT)
                 return(None)
+                break
             clear()
 
         return pkgs
@@ -56,24 +59,6 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
         print(message.KEYBOARD_INTERRUPT)
         exit()
 
-def remove(packages: list):
-    try:
-        if not packages == None:
-            for i in pkgs:
-                subprocess.run(f"sudo -p \"{message.SUDO_PROMPT}\" pacman -Rdd {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
-    except KeyboardInterrupt:
-        print(message.KEYBOARD_INTERRUPT)
-        exit()
-
-def sync(packages: list):
-    try:
-        if not packages == None:
-            for i in packages:
-                print(f"Syncing package: {i}")
-                subprocess.run(f"sudo -p \"{message.SUDO_PROMPT}\" pacman -Sy {i} --noconfirm --noprogressbar", shell=True, stdout=subprocess.DEVNULL)
-    except KeyboardInterrupt:
-        print(message.KEYBOARD_INTERRUPT)
-        exit()
 
 def arguments(app:dict) -> list: 
     try:
@@ -100,6 +85,8 @@ def arguments(app:dict) -> list:
 
 def packages(pkg_filter:str) -> list: 
     try:
+        if pkg_filter.strip() == "":
+            pkgs = subprocess.check_output(f"pacman -Q|cut -f 1 -d \" \"", shell=True).decode().split("\n")
         pkgs = subprocess.check_output(f"pacman -Q|cut -f 1 -d \" \" | grep {pkg_filter}", shell=True).decode().split("\n")
         pkgs:list = list(filter(None, pkgs))
         pkgs.sort()
