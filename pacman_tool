@@ -2,3 +2,4 @@
 # Pacman Tool: A bulk package management tool written in Python.
 
 /bin/python src/__main__.py $@
+
