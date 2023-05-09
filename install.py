@@ -3,7 +3,7 @@ from os import mkdir,listdir,system,path,terminal_size
 from sys import executable
 
 
-dl_files = ["src/__main__.py", "src/__pacman_tool__.py", "install.py", "LICENSE", "README.md", "requirements"]
+dl_files = ["src/", "install.py", "LICENSE", "README.md", "requirements", ".gitignore", ".git/", "pacman_tool"]
 deps_present = False
 already_exists = False
 lib_dir = "/usr/lib/pacman-tool"
