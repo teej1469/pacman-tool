@@ -16,14 +16,15 @@ reinstallation.
 
 ## Installation
 
-1. Clone the repository:`git clone https://github.com/teej1469/pacman-tool`,`cd pacman-tool`
-2. Run the install script:`/bin/python install.py`. It will install all the necessary modules, and copy the source files to`/usr/lib/pacman-tool`.
-3. The tool is now installed, you can now use it as you wish. Be sure to update frequently though!
+1. Ensure you have Python 3.7 or later installed. Check with `python --version`. *(Newer is preferred.)*
+2. Clone the repository:`git clone https://github.com/teej1469/pacman-tool`, `cd pacman-tool`
+3. Run install.py (`python3 ./install.py`) script and follow the prompts.
 
 ## TODO
 
+* [x] Create an installer
+* [ ] Built-in update/uninstall.
 * [ ] Full system update/upgrade on dry run (Like with`yay`)
 * [ ] Continue migrating all text in`__main.py__` to`__pacman_tool__.message`
-* [ ] Create install script that installs`__main__.py` and`__pacman_tool__.py` to`/usr/lib/pacman_tool` so that the script can be run in any directory without returning`/bin/python: can't open file '/CURRENT_DIRECTORY/src/__main__.py': [Errno 2] No such file or directory`
 * [ ] (Maybe) AUR support
 * [ ] (Maybe) Complete rewrite in Rust :)
