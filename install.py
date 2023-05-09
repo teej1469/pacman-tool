@@ -121,5 +121,5 @@ run(f"sudo -p '{sudo_prompt}' ln -rs ./pacman_tool /usr/bin", shell=True)
 
 if inp(f"Remove unnecessary downloaded files? [Y/n]").lower().strip() == "y":
     for i in dl_files:
-        run("rm ./%s -" % i, shell=True)
+        run("rm ./%s -rf" % i, shell=True)
 ok("Installation complete! Run pacman_tool -h for info!")
