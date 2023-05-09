@@ -11,6 +11,7 @@
 Simple python tool I'm working on that essentially acts as a bulk Pacman package manipulation tool.
 I wrote this cuz I got tired of manually searching and deleting all packages related to PipeWire for
 reinstallation.
+
 *NOTE: THIS IS ONLY INTENDED FOR ARCH AND ARCH-BASED LINUX DISTRIBUTIONS THAT USE PACMAN AS THEIR PRIMARY PACKAGE MANAGER. DO NOT POST ISSUES IF IT DOES NOT WORK ON A NON-ARCH-BASED DISTRO, FIND A DIFFERENT TOOL.*
 
 ## Installation
