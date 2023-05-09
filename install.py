@@ -71,10 +71,14 @@ try:
     else:
         warn(f"Directory {lib_dir}/ already exists, but is empty.")
 except Errors.DirectoryNotEmptyError as or_:
+    warn(f"Files exist in {lib_dir}")
     cont = inp("Empty directory and continue installation? [Y/n]").lower().strip()
     if cont == "y":
         run(f"sudo -p '{sudo_prompt}' rm -rf {lib_dir}/*", shell=True)
         ok("Removed unnecessary files")
+    else:
+        err("Nothing to do.")
+        exit()
 except Exception as or_:
     err(or_)
     pass
@@ -92,8 +96,11 @@ open("pacman_tool","w").write(runscript)
 
 task("Moving files to %s" % lib_dir)
 run(f"sudo -p '{sudo_prompt}' cp ./src/* {lib_dir}/", shell=True, stderr=DEVNULL)
-run(f"sudo -p '{sudo_prompt}' cp ./pacman_tool {lib_dir}", shell=True)
+check_output(f"sudo -p '{sudo_prompt}' cp ./pacman_tool {lib_dir}", shell=True, stderr=DEVNULL)
 ok("Files copied")
 task("Creating symbolc link from %s/pacman_tool to /usr/bin/pacman_tool" % lib_dir)
 run(f"sudo -p '{sudo_prompt}' ln -rs ./pacman_tool /usr/bin", shell=True)
+
+if inp(f"Remove unnecessary downloaded files? [Y/n]").lower().strip() == "y":
+    run("rm ./*", shell=True)
 ok("Installation complete! Run pacman_tool -h for info!")
