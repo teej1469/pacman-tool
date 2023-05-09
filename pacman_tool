@@ -1,0 +1,4 @@
+#!/bin/bash
+# Pacman Tool: A bulk package management tool written in Python.
+
+/bin/python /usr/lib/pacman-tool/__main__.py $@

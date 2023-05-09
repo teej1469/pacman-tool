@@ -114,7 +114,7 @@ open("pacman_tool","w").write(runscript)
 
 task("Moving files to %s" % lib_dir)
 run(f"sudo -p '{sudo_prompt}' cp ./src/* {lib_dir}/", shell=True, stderr=DEVNULL)
-check_output(f"sudo -p '{sudo_prompt}' cp ./pacman_tool {lib_dir}", shell=True, stderr=DEVNULL)
+check_output(f"sudo -p '{sudo_prompt}' cp ./src/* {lib_dir}", shell=True, stderr=DEVNULL)
 ok("Files copied")
 task("Creating symbolc link from %s/pacman_tool to /usr/bin/pacman_tool" % lib_dir)
 run(f"sudo -p '{sudo_prompt}' ln -rs ./pacman_tool /usr/bin", shell=True)
