@@ -5,7 +5,7 @@
   <img alt="GitHub" src="https://img.shields.io/github/license/teej1469/pacman-tool?color=informational&style=plastic">
   <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/teej1469/pacman-tool?style=plastic">
   <img alt="Maintenance" src="https://img.shields.io/maintenance/yes/2023?style=plastic">
-  <img alt="Version" src="https://img.shields.io/badge/version-Alpha--0.4-important?style=plastic">
+  <img alt="Version" src="https://img.shields.io/badge/version-Alpha--0.0.5-important?style=plastic">
 </p>
 
 Simple python tool I'm working on that essentially acts as a bulk Pacman package manipulation tool.
