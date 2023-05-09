@@ -5,6 +5,11 @@ from sys import executable
 
 dl_files = ["src/__main__.py", "src/__pacman_tool__.py", "install.py", "LICENSE", "README.md", "requirements"]
 deps_present = False
+already_exists = False
+lib_dir = "/usr/lib/pacman-tool"
+here = __file__
+class Errors():
+    class DirectoryNotEmptyError(OSError): ...
 try:
     try:
         import sudo
@@ -56,11 +61,6 @@ except Exception:
     sudo_prompt = f"[SUDO] Root password required.\n> "
     warn("Coloured outputs unavailable.")
 
-lib_dir = "/usr/lib/pacman-tool"
-here = __file__
-
-class Errors():
-    class DirectoryNotEmptyError(OSError): ...
 try:
     if not path.exists(lib_dir):
         warn(f"Need root permissions to create directory {lib_dir}")
@@ -73,14 +73,30 @@ try:
     else:
         warn(f"Directory {lib_dir}/ already exists, but is empty.")
 except Errors.DirectoryNotEmptyError as or_:
-    warn(f"Files exist in {lib_dir}")
-    cont = inp("Empty directory and continue installation? [Y/n]").lower().strip()
-    if cont == "y":
-        run(f"sudo -p '{sudo_prompt}' rm -rf {lib_dir}/*", shell=True)
-        ok("Removed unnecessary files")
+    if any(["__main__.py" in listdir(lib_dir), "__pacman_tool__.py"in listdir(lib_dir)]):
+        warn("There is already a version of Pacman Tool installed.")
+        if inp("Do you want to uninstall it? [Y/n]").lower().strip() == "y":
+            run(f"sudo -p '{sudo_prompt}' rm -rf {lib_dir}/*", shell=True)
+            run(f"sudo -p '{sudo_prompt}' rm -rf /usr/bin/pacman_tool", shell=True)
+            ok("Successfully uninstalled.")
+            if inp("Do you wish to continue installing?").lower().strip() == "y":
+                pass
+            else:
+                err("Nothing to do.")
+                exit()
+        else:
+            err("Nothing to do.")
+            exit()
     else:
-        err("Nothing to do.")
-        exit()
+        warn(f"Files exist in {lib_dir}")
+        if inp("Empty directory and continue installation? [Y/n]").lower().strip() == "y":
+            run(f"sudo -p '{sudo_prompt}' rm -rf {lib_dir}/*", shell=True)
+            ok("Removed obstructing files")
+        else:
+            err("Nothing to do.")
+            exit()
+except NotADirectoryError as or_:
+    err(or_)
 except Exception as or_:
     err(or_)
     pass
