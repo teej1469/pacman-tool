@@ -1,4 +1,12 @@
-# pacman-tool
+<h1 align="center">Pacman Tool</h1>
+<p align="center">
+  <img alt="Github code size in bytes" src="https://img.shields.io/github/languages/code-size/teej1469/pacman-tool?style=plastic">
+  <img alt="GitHub issues" src="https://img.shields.io/github/issues/teej1469/pacman-tool?style=plastic">
+  <img alt="GitHub" src="https://img.shields.io/github/license/teej1469/pacman-tool?color=green&style=plastic">
+  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/teej1469/pacman-tool?style=plastic">
+  <img alt="Maintenance" src="https://img.shields.io/maintenance/yes/2023?style=plastic">
+  <img alt="Version" src="https://img.shields.io/badge/version-Alpha--0.4-important?style=plastic">
+</p>
 
 Simple python tool I'm working on that essentially acts as a bulk Pacman package manipulation tool.
 I wrote this cuz I got tired of manually searching and deleting all packages related to PipeWire for

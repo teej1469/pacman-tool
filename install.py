@@ -1,12 +1,22 @@
 from subprocess import run,DEVNULL,check_output, CalledProcessError, PIPE, Popen
-from os import mkdir,listdir,system,path
-deps_present = False
+from os import mkdir,listdir,system,path,terminal_size
+from sys import executable
 
-def import_required():
+deps_present = False
+try:
     try:
         import sudo
         import argparse
         from colorama import Fore, Back, Style
+    except ModuleNotFoundError:
+        if deps_present == False:
+            print("Installing required packages...")
+            run(f"{executable} -m pip install -r ./requirements", shell=True, stdout=DEVNULL, stderr=DEVNULL)
+            print("Installed required packages.")
+    finally: 
+        import sudo, argparse
+        from colorama import Fore, Back, Style 
+
         WARN = Fore.YELLOW
         ERR = Fore.RED
         OK = Fore.GREEN
@@ -29,92 +39,23 @@ def import_required():
         def inp(values: object) -> str:
             return(input(f"{IN}[ IN ] {values}\n> {RESET}"))
         sudo_prompt = f"{SUDO}[SUDO] Sudo password required.\n> {RESET}"
-
         ok("Dependencies present")
-    except ModuleNotFoundError as e:
-        def warn(values: object):
-            print(f"[WARN] {values}")
-        def err(values: object):
-            print(f"[ERR ] {values}")
-        def ok(values: object):
-            print(f"[ OK ] {values}")
-        def task(values: object):
-            print(f"[TASK] {values}")
-        def inp(values: object) -> str:
-            return(input(f"[ IN ] {values}\n> "))
-        sudo_prompt = f"[SUDO] Root password required.\n> "
-        warn("Coloured outputs unavailable.")
+except Exception:
+    def warn(values: object):
+        print(f"[WARN] {values}")
+    def err(values: object):
+        print(f"[ERR ] {values}")
+    def ok(values: object):
+        print(f"[ OK ] {values}")
+    def task(values: object):
+        print(f"[TASK] {values}")
+    def inp(values: object) -> str:
+        return(input(f"[ IN ] {values}\n> "))
+    sudo_prompt = f"[SUDO] Root password required.\n> "
+    warn("Coloured outputs unavailable.")
 
-import_required
-python_bin = ["/bin/python3","/usr/bin/python3","/bin/python","/usr/bin/python"]
-def bin(bins:list):
-    task("Finding python binary")
-    def exists(path:str):
-        try: open(path,"r")
-        except FileNotFoundError:
-            return(False)
-        else: return(True)
-
-    def check_ver(path:str) -> list:
-        if exists(path):
-            ver = int(check_output(f"{path} --version", shell=True)
-            .decode()
-            .removeprefix("Python")[:-2]
-            .replace(".", "")
-            .strip())
-            if ver >= 310:
-                return [f"{path}",ver]
-
-    def biggest(args: list):
-        biggest = 0
-        for i in args:
-            if i >= biggest:
-                biggest = i
-        return biggest
-
-    bin: list = []
-    ver: list = []
-    for i in python_bin:
-        ver.append(check_ver(i)[1])
-        bin.append(check_ver(i)[0])
-    verindex = ver.index(biggest(ver))
-    ok(f"Found python binary: {bin[verindex]}")
-    return bin[verindex]
-
-
-binary = bin(python_bin)
 lib_dir = "/usr/lib/pacman-tool"
 here = __file__
-
-if deps_present == False:
-    print("Installing required packages...")
-    run(f"{binary} -m pip install -r ./requirements", shell=True, stdout=DEVNULL, stderr=DEVNULL)
-    print("Installed required packages.")
-
-    import sudo
-    from colorama import Fore, Back, Style
-    WARN = Fore.YELLOW
-    ERR = Fore.RED
-    OK = Fore.GREEN
-    ACTION = Fore.BLACK
-    IN = Fore.LIGHTCYAN_EX
-    RESET = Fore.RESET
-    SUDO = Fore.MAGENTA
-
-    def warn(values: object):
-        print(f"{WARN}[WARN] {values}{RESET}")
-    def err(values: object):
-        print(f"{ERR}[ERR!] {values}{RESET}")
-    def ok(values: object):
-        print(f"{OK}[ OK ] {values}{RESET}")
-    def task(values: object):
-        print(f"{ACTION}[TASK] {values}{RESET}")
-    def style(values: object, style: object):
-        print(f"{style}{values}{RESET}")
-    def inp(values: object) -> str:
-        return(input(f"{IN}[ IN ] {values}\n> {RESET}"))
-    sudo_prompt = f"{SUDO}[SUDO] Sudo password required.\n> {RESET}"
-
 
 class Errors():
     class DirectoryNotEmptyError(OSError): ...
