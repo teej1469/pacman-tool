@@ -98,7 +98,7 @@ def packages(pkg_filter:str) -> list:
 def main():
     APP = {
         "Type": "Alpha",
-        "Version": "0.0.5",
+        "Version": "0.0.6",
         "Name": "Pacman Tool",
         "SWName": "pacman-tool"}
     try:
