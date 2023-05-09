@@ -2,6 +2,8 @@ from subprocess import run,DEVNULL,check_output, CalledProcessError, PIPE, Popen
 from os import mkdir,listdir,system,path,terminal_size
 from sys import executable
 
+
+dl_files = ["src/__main__.py", "src/__pacman_tool__.py", "install.py", "LICENSE", "README.md", "requirements"]
 deps_present = False
 try:
     try:
@@ -102,5 +104,6 @@ task("Creating symbolc link from %s/pacman_tool to /usr/bin/pacman_tool" % lib_d
 run(f"sudo -p '{sudo_prompt}' ln -rs ./pacman_tool /usr/bin", shell=True)
 
 if inp(f"Remove unnecessary downloaded files? [Y/n]").lower().strip() == "y":
-    run("rm ./*", shell=True)
+    for i in dl_files:
+        run("rm ./%s -" % i, shell=True)
 ok("Installation complete! Run pacman_tool -h for info!")
