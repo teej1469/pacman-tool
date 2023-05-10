@@ -78,7 +78,7 @@ except Errors.DirectoryNotEmptyError as or_:
         warn("There is already a version of Pacman Tool installed.")
         if inp("Do you want to uninstall it? [Y/n]").lower().strip() == "y":
             run(f"sudo -p '{sudo_prompt}' rm -rf {lib_dir}", shell=True)
-            run(f"sudo -p '{sudo_prompt}' rm -rf /usr/bin/pacman_tool", shell=True)
+            run(f"sudo -p '{sudo_prompt}' rm -rf /usr/bin/pacman-tool", shell=True)
             ok("Successfully uninstalled.")
             if inp("Do you wish to continue installing?").lower().strip() == "y":
                 pass
