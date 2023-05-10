@@ -1,6 +1,9 @@
 import os, subprocess, argparse
 from sys import argv
 from __pacman_tool__ import *
+import argparse
+import sudo, argparse
+
 
 def package_list(packages: list) -> list:       # Update: I fixed that shit!
     try: 
@@ -15,7 +18,7 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
         while approved != True:
             clear()
             print("\n".join(list_pkgs))
-            ignore = input(message.IGNORE_PROMPT)
+            ignore = inp(message.IGNORE_PROMPT)
             if ignore == "":    # Handling no input - assuming no corrections.
                 approved = True
                 break
@@ -63,13 +66,13 @@ def package_list(packages: list) -> list:       # Update: I fixed that shit!
 def arguments(app:dict) -> list: 
     try:
         argparse.HelpFormatter(prog=app.get("Name"))
-        argParser = argparse.ArgumentParser(prog=app.get("SWName"),description=f"{app.get('Name')} is a simple pacman tool written in python for bulk package operations.")
+        argParser = argparse.ArgumentParser(prog=app.get("ExecName"),description=f"{app.get('Name')} is a simple pacman tool written in python for bulk package operations.")
         
-        argParser.add_argument("-v", "--version", action="version", version=f'%(prog)s {app.get("Type")} {app.get("Version")}')
+        argParser.add_argument("-v", "--version", action="version", version=f'%(prog)s {app.get("Stage")} {app.get("Version")}')
         action = argParser.add_mutually_exclusive_group()
         action.required = True
         action.add_argument("-R", type=str, help="Purge Pacman packages filtered by name", metavar="pkg")
-        action.add_argument("-S", type=str, help="Resyncronize packages filtered by name", metavar="pkg")
+        action.add_argument("-L", type=str, help="Resyncronize packages filtered by name", metavar="pkg")
         argParser.conflict_handler
         args = argParser.parse_args()
 
@@ -96,19 +99,16 @@ def packages(pkg_filter:str) -> list:
         exit()
 
 def main():
-    APP = {
-        "Type": "Alpha",
-        "Version": "0.0.6",
-        "Name": "Pacman Tool",
-        "SWName": "pacman-tool"}
     try:
-        args = arguments(app=APP)
+        args = arguments(app=info.app)
         pkgs = packages(args[1])
 
         if args[0] == "R":
             remove(package_list(pkgs))
-        elif args[0] == "S":
+        elif args[0] == "L":
             sync(package_list(pkgs))
+        elif args[0] == "":
+            raise(NotImplementedError("Package syncing is not yet supported."))
     except KeyboardInterrupt:
         print(message.KEYBOARD_INTERRUPT)
         exit()

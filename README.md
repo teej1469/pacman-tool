@@ -23,8 +23,9 @@ reinstallation.
 ## TODO
 
 * [x] Create an installer
+* [x] Migrating all text in`__main.py__` to`__pacman_tool__.message`
+* [ ] Come up with a better name
 * [ ] Built-in update/uninstall.
 * [ ] Full system update/upgrade on dry run (Like with`yay`)
-* [ ] Continue migrating all text in`__main.py__` to`__pacman_tool__.message`
 * [ ] (Maybe) AUR support
 * [ ] (Maybe) Complete rewrite in Rust :)

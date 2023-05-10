@@ -3,7 +3,7 @@ from os import mkdir,listdir,system,path,terminal_size
 from sys import executable
 
 
-dl_files = ["src/", "install.py", "LICENSE", "README.md", "requirements", ".gitignore", ".git/", "pacman_tool"]
+dl_files = ["src/", "install.py", "LICENSE", "README.md", "requirements", ".gitignore", ".git/", "pacman-tool"]
 
 deps_present = False
 already_exists = False
@@ -74,13 +74,14 @@ try:
     else:
         warn(f"Directory {lib_dir}/ already exists, but is empty.")
 except Errors.DirectoryNotEmptyError as or_:
-    if any(["__main__.py" in listdir(lib_dir), "__pacman_tool__.py"in listdir(lib_dir)]):
+    if any(["__main__.py" in listdir(lib_dir), "__pacman-tool__.py"in listdir(lib_dir)]):
         warn("There is already a version of Pacman Tool installed.")
         if inp("Do you want to uninstall it? [Y/n]").lower().strip() == "y":
             run(f"sudo -p '{sudo_prompt}' rm -rf {lib_dir}", shell=True)
             run(f"sudo -p '{sudo_prompt}' rm -rf /usr/bin/pacman-tool", shell=True)
             ok("Successfully uninstalled.")
             if inp("Do you wish to continue installing?").lower().strip() == "y":
+                run(f"sudo -p '{sudo_prompt}' /bin/mkdir {lib_dir}",shell=True)
                 pass
             else:
                 err("Nothing to do.")
@@ -91,7 +92,6 @@ except Errors.DirectoryNotEmptyError as or_:
     else:
         warn(f"Files exist in {lib_dir}")
         if inp("Empty directory and continue installation? [Y/n]").lower().strip() == "y":
-            run(f"sudo -p '{sudo_prompt}' rm -rf {lib_dir}/*", shell=True)
             run("sudo -p '%s' mkdir %s" % (sudo_prompt, lib_dir), shell=True)
             ok("Removed obstructing files")
         else:
@@ -118,16 +118,16 @@ runscript = """#!/bin/bash
 /bin/python %s/__main__.py $@
 """ % lib_dir
 
-open("pacman_tool","w").write(runscript)
+open("pacman-tool","w").write(runscript)
 
 task("Moving files to %s" % lib_dir)
 run(f"sudo -p '{sudo_prompt}' cp ./src/* {lib_dir}/", shell=True, stderr=DEVNULL)
 ok("Files copied")
-task("Installing pacman_tool to /usr/bin/pacman_tool")
-run(f"sudo -p '{sudo_prompt}' cp pacman_tool /usr/bin", shell=True, stderr=DEVNULL)
-run("sudo -p '%s' chmod +x /usr/bin/pacman_tool" % (sudo_prompt), shell=True, stderr=DEVNULL)
+task("Installing pacman-tool to /usr/bin/pacman-tool")
+run(f"sudo -p '{sudo_prompt}' cp pacman-tool /usr/bin", shell=True, stderr=DEVNULL)
+run("sudo -p '%s' chmod +x /usr/bin/pacman-tool" % (sudo_prompt), shell=True, stderr=DEVNULL)
 
 if inp(f"Remove unnecessary downloaded files? [Y/n]").lower().strip() == "y":
     for i in dl_files:
         run("rm ./%s -rf" % i, shell=True)
-ok("Installation complete! Run pacman_tool -h for info!")
+ok("Installation complete! Run pacman-tool -h for info!")
